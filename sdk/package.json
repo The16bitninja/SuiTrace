@@ -1,0 +1,20 @@
+{
+  "name": "@suitrace/sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@mysten/sui": "latest",
+    "js-sha256": "^0.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4.22.4",
+    "typescript": "^5",
+    "vitest": "^3"
+  }
+}
