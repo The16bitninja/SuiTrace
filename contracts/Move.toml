@@ -1,0 +1,9 @@
+[package]
+name = "SuiTrace"
+edition = "2024"
+
+[dependencies]
+# Sui framework is auto-injected by the CLI for edition = "2024" packages.
+
+[addresses]
+suitrace = "0x0"
