@@ -1,8 +1,8 @@
-import { SuiClient } from "@mysten/sui/client";
+import type { SuiJsonRpcClient } from "@mysten/sui/jsonRpc";
 import { Transaction } from "@mysten/sui/transactions";
 import type { Signer } from "@mysten/sui/cryptography";
 import { sha256 } from "js-sha256";
-import { uploadBlob, fetchBlob } from "./walrus.js";
+import { uploadBlob, fetchBlob } from "./walrus";
 
 const PACKAGE_ID  = process.env.SUITRACE_PACKAGE_ID ?? "";
 const REGISTRY_ID = process.env.SUITRACE_REGISTRY_ID ?? "";
@@ -84,7 +84,7 @@ export function verifyChain(chain: ChainEntry[]): VerifyResult {
 // ── Write path ────────────────────────────────────────────────────────────────
 
 export async function recordDecision(
-  suiClient: SuiClient,
+  suiClient: SuiJsonRpcClient,
   signer:    Signer,
   params: {
     agentAddress: string;
@@ -142,20 +142,30 @@ export async function recordDecision(
 // ── Read path ─────────────────────────────────────────────────────────────────
 
 export async function fetchDecisionChain(
-  suiClient:    SuiClient,
+  suiClient:    SuiJsonRpcClient,
   agentAddress: string,
+  registryId:   string = REGISTRY_ID,
 ): Promise<ChainEntry[]> {
+  // Not deployed yet (no registry configured) → empty history, not an error.
+  if (!registryId) return [];
+
   // Read registry object to get the heads and history table IDs
-  const registry = await suiClient.getObject({
-    id:      REGISTRY_ID,
-    options: { showContent: true },
-  });
+  let registry;
+  try {
+    registry = await suiClient.getObject({
+      id:      registryId,
+      options: { showContent: true },
+    });
+  } catch {
+    return [];
+  }
 
   const regFields  = (registry.data?.content as any)?.fields;
   const headsId    = regFields?.heads?.fields?.id?.id as string | undefined;
   const historyId  = regFields?.history?.fields?.id?.id as string | undefined;
 
-  if (!headsId || !historyId) throw new Error("Could not read AgentRegistry table IDs");
+  // Registry object not found or malformed → treat as no history.
+  if (!headsId || !historyId) return [];
 
   // Check if the agent has any history (via the heads table)
   let headField: Awaited<ReturnType<typeof suiClient.getDynamicFieldObject>>;

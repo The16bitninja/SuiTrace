@@ -10,7 +10,9 @@ export interface BlobMeta {
 export async function uploadBlob(content: Uint8Array, epochs = 10): Promise<BlobMeta> {
   const res = await fetch(`${WALRUS_PUBLISHER}/v1/blobs?epochs=${epochs}`, {
     method: "PUT",
-    body: content,
+    // Uint8Array is a valid request body at runtime (verified against Walrus);
+    // cast satisfies the stricter DOM BodyInit type under Next's typecheck.
+    body: content as unknown as BodyInit,
     headers: { "Content-Type": "application/octet-stream" },
   });
   if (!res.ok) throw new Error(`Walrus upload failed: ${res.status} ${await res.text()}`);

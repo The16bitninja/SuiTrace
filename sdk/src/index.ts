@@ -1,2 +1,2 @@
-export * from "./walrus.js";
-export * from "./trace.js";
+export * from "./walrus";
+export * from "./trace";

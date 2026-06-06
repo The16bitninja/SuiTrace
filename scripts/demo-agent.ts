@@ -14,9 +14,9 @@
  *   pnpm demo          # session 2 → BUY  (reads session 1 from Walrus)
  */
 
-import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import { SuiJsonRpcClient, getJsonRpcFullnodeUrl } from "@mysten/sui/jsonRpc";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
-import { recordDecision, fetchDecisionChain, verifyChain } from "../sdk/src/trace.js";
+import { recordDecision, fetchDecisionChain, verifyChain } from "../sdk/src/trace";
 
 // ── Setup ─────────────────────────────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ if (!process.env.SUITRACE_PACKAGE_ID || !process.env.SUITRACE_REGISTRY_ID) {
   process.exit(1);
 }
 
-const suiClient    = new SuiClient({ url: getFullnodeUrl("testnet") });
+const suiClient    = new SuiJsonRpcClient({ url: getJsonRpcFullnodeUrl("testnet"), network: "testnet" });
 const keypair      = Ed25519Keypair.fromSecretKey(PRIVATE_KEY);
 const agentAddress = keypair.toSuiAddress();
 
