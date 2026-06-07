@@ -9,6 +9,14 @@ const REGISTRY_ID = process.env.SUITRACE_REGISTRY_ID ?? "";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+// A verifiable pointer to another agent's artifact (multi-agent provenance).
+// content_hash lets a verifier cross-check the ref against the target's on-chain record.
+export interface DerivedRef {
+  agent:        string;
+  blob_id:      string;
+  content_hash: string; // hex
+}
+
 export interface ContextBlob {
   agent:        string;
   seq_num:      number;
@@ -17,6 +25,7 @@ export interface ContextBlob {
   decision:     string;
   prev_blob_id: string | null;
   prev_hash:    string | null;
+  derived_from?: DerivedRef[];
 }
 
 export interface ChainEntry {
@@ -48,6 +57,7 @@ export function buildContextBlob(
   decision:     string,
   prevBlobId:   string | null,
   prevHash:     Uint8Array | null,
+  derivedFrom?: DerivedRef[],
 ): { bytes: Uint8Array; hash: Uint8Array } {
   const blob: ContextBlob = {
     agent:        agentAddress,
@@ -58,6 +68,10 @@ export function buildContextBlob(
     prev_blob_id: prevBlobId,
     prev_hash:    prevHash ? Buffer.from(prevHash).toString("hex") : null,
   };
+  // Only attach when present so single-agent blobs stay unchanged.
+  if (derivedFrom && derivedFrom.length > 0) {
+    blob.derived_from = derivedFrom;
+  }
   const bytes = new TextEncoder().encode(JSON.stringify(blob, null, 2));
   const hash  = new Uint8Array(sha256.array(bytes));
   return { bytes, hash };
@@ -94,8 +108,9 @@ export async function recordDecision(
     summary:      string;
     prevBlobId:   string | null;
     prevHash:     Uint8Array | null;
+    derivedFrom?: DerivedRef[]; // multi-agent provenance (optional)
   },
-): Promise<{ txDigest: string; blobId: string; seqNum: number }> {
+): Promise<{ txDigest: string; blobId: string; seqNum: number; contentHash: Uint8Array }> {
   const { bytes, hash } = buildContextBlob(
     params.agentAddress,
     params.seqNum,
@@ -103,6 +118,7 @@ export async function recordDecision(
     params.decision,
     params.prevBlobId,
     params.prevHash,
+    params.derivedFrom,
   );
 
   // Step 1 — upload to Walrus (off-chain HTTP)
@@ -136,7 +152,7 @@ export async function recordDecision(
     throw new Error(`PTB failed: ${JSON.stringify(result.effects?.status)}`);
   }
 
-  return { txDigest: result.digest, blobId, seqNum: params.seqNum };
+  return { txDigest: result.digest, blobId, seqNum: params.seqNum, contentHash: hash };
 }
 
 // ── Read path ─────────────────────────────────────────────────────────────────
@@ -234,6 +250,42 @@ export async function fetchDecisionChain(
   }
 
   return entries;
+}
+
+/**
+ * Walk the cross-agent provenance graph starting from one agent: fetch its chain,
+ * follow `derived_from` references to other agents, and fetch those too (bounded,
+ * deduped). Returns one chain per agent, root first — feed straight into
+ * buildDecisionGraph for a multi-lane provenance DAG.
+ */
+export async function fetchProvenance(
+  suiClient:   SuiJsonRpcClient,
+  rootAddress: string,
+  registryId:  string = REGISTRY_ID,
+  maxDepth     = 2,
+): Promise<ChainEntry[][]> {
+  const seen = new Set<string>();
+  const result: ChainEntry[][] = [];
+
+  async function walk(addr: string, depth: number): Promise<void> {
+    if (seen.has(addr) || depth > maxDepth) return;
+    seen.add(addr);
+
+    const chain = await fetchDecisionChain(suiClient, addr, registryId);
+    if (chain.length === 0) return;
+    result.push(chain);
+
+    const refAgents = new Set<string>();
+    for (const e of chain) {
+      for (const ref of e.content?.derived_from ?? []) {
+        if (ref.agent && !seen.has(ref.agent)) refAgents.add(ref.agent);
+      }
+    }
+    for (const a of refAgents) await walk(a, depth + 1);
+  }
+
+  await walk(rootAddress, 0);
+  return result;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
