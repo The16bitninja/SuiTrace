@@ -33,7 +33,11 @@ if (!process.env.SUITRACE_PACKAGE_ID || !process.env.SUITRACE_REGISTRY_ID) {
   process.exit(1);
 }
 
-const suiClient    = new SuiJsonRpcClient({ url: getJsonRpcFullnodeUrl("testnet"), network: "testnet" });
+// Network is overridable so the same agent can run against a local node
+// (SUI_RPC_URL=http://127.0.0.1:9000 SUI_NETWORK=localnet) or testnet (default).
+const SUI_NETWORK  = (process.env.SUI_NETWORK ?? "testnet") as "testnet" | "mainnet" | "devnet" | "localnet";
+const SUI_RPC_URL  = process.env.SUI_RPC_URL ?? getJsonRpcFullnodeUrl(SUI_NETWORK);
+const suiClient    = new SuiJsonRpcClient({ url: SUI_RPC_URL, network: SUI_NETWORK });
 const keypair      = Ed25519Keypair.fromSecretKey(PRIVATE_KEY);
 const agentAddress = keypair.toSuiAddress();
 
