@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { fetchDecisionChain, verifyChain } from "@suitrace/sdk";
+import type { ChainEntry } from "@suitrace/sdk";
+import { fetchDecisionChain, fetchProvenance, verifyChain, buildDecisionGraph } from "@suitrace/sdk";
 import { suiClient, REGISTRY_ID, isDeployed } from "../lib/sui";
 import { getFixtureChain, isDemoAddress } from "../lib/fixtures";
 import DecisionRow from "../components/DecisionRow";
 import IntegrityVerifier from "../components/IntegrityVerifier";
+import DecisionsView from "../components/DecisionsView";
 import Reveal from "../components/motion/Reveal";
 
 // Always fetch fresh — this is a live verification tool, not a cached view.
@@ -17,13 +19,27 @@ export default async function AgentPage({
   params: Promise<{ address: string }>;
 }) {
   const { address } = await params;
+  // The only fixtures left are the tamper/offline simulations (states that
+  // cannot exist as real on-chain data). Everything else is live chain data.
   const demo = isDemoAddress(address);
 
-  const chain = demo
-    ? getFixtureChain(address)
-    : await fetchDecisionChain(suiClient, address, REGISTRY_ID);
+  // Build the per-agent chain set. One lane for a single agent; multiple lanes
+  // when provenance fans out to other agents via derived_from references.
+  let chains: ChainEntry[][];
+  if (demo) {
+    chains = [getFixtureChain(address)];
+  } else {
+    const root = await fetchDecisionChain(suiClient, address, REGISTRY_ID);
+    const hasRefs = root.some((e) => (e.content?.derived_from?.length ?? 0) > 0);
+    chains = hasRefs
+      ? await fetchProvenance(suiClient, address, REGISTRY_ID)
+      : [root];
+  }
 
+  const chain = chains.flat();          // flattened list for the table + verifier
   const verification = verifyChain(chain);
+  const graph = buildDecisionGraph(chains);
+  const multiAgent = chains.length > 1;
 
   return (
     <main className="mx-auto w-full max-w-4xl px-6 py-12">
@@ -39,8 +55,10 @@ export default async function AgentPage({
 
         {demo && (
           <p className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
-            Sample data — illustrates the verification flow before the contract is
-            live on testnet.
+            Simulated — this state can&apos;t exist as real on-chain data (a blob
+            can&apos;t be tampered after its hash is anchored, nor made unreachable
+            on demand). It shows what detection looks like. All other agents on
+            this site load live testnet data.
           </p>
         )}
       </Reveal>
@@ -60,28 +78,32 @@ export default async function AgentPage({
             <IntegrityVerifier result={verification} />
           </div>
 
-          <Reveal delay={0.05} className="mt-6 overflow-hidden rounded-lg border border-white/10">
-            <table className="w-full text-left">
-              <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-zinc-500">
-                <tr>
-                  <th className="px-4 py-3 font-medium">seq</th>
-                  <th className="px-4 py-3 font-medium">summary</th>
-                  <th className="px-4 py-3 font-medium">certified</th>
-                  <th className="px-4 py-3 font-medium">expires</th>
-                  <th className="px-4 py-3 font-medium">status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {chain.map((entry, i) => (
-                  <DecisionRow
-                    key={entry.seqNum}
-                    entry={entry}
-                    address={address}
-                    index={i}
-                  />
-                ))}
-              </tbody>
-            </table>
+          <Reveal delay={0.05} className="mt-6">
+            <DecisionsView graph={graph} defaultView={multiAgent ? "graph" : "table"}>
+              <div className="overflow-hidden rounded-lg border border-white/10">
+                <table className="w-full text-left">
+                  <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-zinc-500">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">seq</th>
+                      <th className="px-4 py-3 font-medium">summary</th>
+                      <th className="px-4 py-3 font-medium">certified</th>
+                      <th className="px-4 py-3 font-medium">expires</th>
+                      <th className="px-4 py-3 font-medium">status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {chain.map((entry, i) => (
+                      <DecisionRow
+                        key={`${entry.content?.agent ?? "lane"}-${entry.seqNum}-${i}`}
+                        entry={entry}
+                        address={entry.content?.agent ?? address}
+                        index={i}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </DecisionsView>
           </Reveal>
         </>
       )}

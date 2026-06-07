@@ -1,16 +1,16 @@
 import type { ChainEntry } from "@suitrace/sdk";
 
 /**
- * Demo fixtures so the VERIFIED / TAMPERED / CONTEXT-UNAVAILABLE flow is
- * visible before the contract is deployed to testnet (deploy is blocked on
- * gas — see TODO.md). Reachable via the sentinel addresses below.
- *
- * Once the contract is live, real agent addresses load real on-chain data and
- * these fixtures are never touched.
+ * Simulation-only fixtures for the two states that CANNOT exist as real
+ * on-chain data, by design:
+ *   - TAMPERED: a blob can't be altered after its hash is anchored.
+ *   - UNAVAILABLE: a blob can't be made unreachable on demand.
+ * Everything else (happy path, multi-agent pipeline) is served from the live
+ * testnet chain via real agent addresses — these fixtures are only reached by
+ * the two sentinel addresses below.
  */
 
 export const DEMO_ADDRESSES = {
-  verified:  "demo",
   tampered:  "demo-tampered",
   offline:   "demo-offline",
 } as const;

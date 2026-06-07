@@ -22,10 +22,15 @@ await recordDecision(client, signer, {
   prevHash:   prev?.contentHash ?? null,
 });`;
 
+// Real agents recorded on Sui testnet (live chain data).
+const TREASURY_AGENT = "0x9e7a2c08cfcd35e83171bf61bb15d04800f516f746f4cb1e5ac802759a090025";
+const PIPELINE_EXECUTION = "0x5b164d63438e05d8c501676df1036f20316d69efae539c32e1653f94a190dde9";
+
 const DEMO_LINKS = [
-  { href: "/demo",          label: "DAO Treasury agent",  note: "2 decisions · all VERIFIED", tone: "text-emerald-400" },
-  { href: "/demo-tampered", label: "Tampered example",    note: "blob altered → TAMPERED",     tone: "text-red-400" },
-  { href: "/demo-offline",  label: "Unreachable example", note: "blob offline → UNAVAILABLE",  tone: "text-zinc-500" },
+  { href: `/${TREASURY_AGENT}`,     label: "DAO Treasury agent",      note: "live on testnet · 2 decisions", tone: "text-emerald-400" },
+  { href: `/${PIPELINE_EXECUTION}`, label: "Multi-agent pipeline",    note: "live on testnet · 3 agents",    tone: "text-sky-400" },
+  { href: "/demo-tampered",         label: "Tampered (simulated)",    note: "what tamper detection looks like", tone: "text-red-400" },
+  { href: "/demo-offline",          label: "Unavailable (simulated)", note: "blob offline → UNAVAILABLE",       tone: "text-zinc-500" },
 ];
 
 const STEPS = [
