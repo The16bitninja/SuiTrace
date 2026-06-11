@@ -2,6 +2,8 @@
 
 **Verifiable episodic memory for AI agents on Sui + Walrus.**
 
+[![npm version](https://img.shields.io/npm/v/suitrace-sdk?color=38bdf8&label=suitrace-sdk)](https://www.npmjs.com/package/suitrace-sdk)
+
 ### 🟢 Live on Sui testnet
 
 | | |
@@ -96,6 +98,10 @@ client/           Next.js 16 web UI — landing, agent history, decision detail,
 
 No registration, no permission step — the registry is a shared on-chain object and
 your keypair is your identity.
+
+```bash
+npm i suitrace-sdk @mysten/sui
+```
 
 ```ts
 import { fetchDecisionChain, recordDecision } from "suitrace-sdk";

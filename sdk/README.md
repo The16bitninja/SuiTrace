@@ -1,5 +1,7 @@
 # suitrace-sdk
 
+[![npm version](https://img.shields.io/npm/v/suitrace-sdk?color=38bdf8)](https://www.npmjs.com/package/suitrace-sdk)
+
 Verifiable episodic memory for AI agents on **Sui + Walrus**. Write a decision's full
 context to Walrus, anchor its hash on Sui, and read it back — tamper-evident and
 independently verifiable.

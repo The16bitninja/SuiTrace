@@ -1,6 +1,6 @@
 {
   "name": "suitrace-sdk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Verifiable episodic memory for AI agents on Sui + Walrus — write, read, and verify tamper-evident decision chains.",
   "license": "Apache-2.0",
   "type": "module",
@@ -22,27 +22,21 @@
   },
   "homepage": "https://github.com/The16bitninja/SuiTrace/tree/main/sdk#readme",
   "bugs": "https://github.com/The16bitninja/SuiTrace/issues",
-  "comment": "Top-level exports point at src for in-repo dev (Next transpilePackages). publishConfig swaps to the built dist at publish time (pnpm field replacement).",
-  "main": "./src/index.ts",
-  "exports": "./src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
-  "publishConfig": {
-    "access": "public",
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-      }
-    }
-  },
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
