@@ -2,7 +2,7 @@
  * Seed a BUSY multi-agent provenance network on Sui testnet.
  *
  * Six agents, each with multiple decisions, referencing each other's artifacts
- * via real `derived_from` links — so the provenance graph looks like a network:
+ * via real `derived_from` links, so the provenance graph looks like a network:
  *
  *   PriceOracle ─┐                 ┌─► Risk ─┐
  *   Sentiment  ──┴► Research ─► Strategy ────┴► Execution
@@ -119,7 +119,7 @@ async function main() {
     { plan: "target 10%" }, "st0", [{ agent: "RE", label: "re1" }]);
 
   // Risk derives from strategy + live price
-  await record("RI", "ri0", 0, "Risk check: within VaR limits", "Risk OK — within limits",
+  await record("RI", "ri0", 0, "Risk check: within VaR limits", "Risk OK: within limits",
     { var_pct: 3.1, limit_pct: 5 }, null, [{ agent: "ST", label: "st1" }, { agent: "PO", label: "po1" }]);
 
   // Execution derives from strategy (first half) then strategy + risk (second half)

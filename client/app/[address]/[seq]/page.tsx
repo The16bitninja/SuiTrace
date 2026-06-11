@@ -95,12 +95,12 @@ export default async function DecisionDetailPage({
           <p className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
             The blob fetched from Walrus does not match the on-chain
             <span className="font-mono"> content_hash</span>. The content was
-            altered after certification — it cannot be trusted and is not shown.
+            altered after certification, so it cannot be trusted and is not shown.
           </p>
         ) : (
           <p className="rounded-lg border border-white/10 bg-white/[0.02] p-4 text-sm text-zinc-400">
             The blob could not be fetched from Walrus right now. This is a
-            network/availability issue — it does <strong>not</strong> mean the
+            network/availability issue. It does <strong>not</strong> mean the
             content was tampered with.
           </p>
         )}

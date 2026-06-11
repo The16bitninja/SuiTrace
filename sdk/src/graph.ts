@@ -48,7 +48,7 @@ function agentOf(e: ChainEntry, laneFallback: string): string {
  * Turn one or more agents' decision chains into a node/edge graph.
  *
  * Layout: one lane (row) per agent, ordered by dependency depth so sources
- * (oracles) sit at the top and consumers (execution) at the bottom — this makes
+ * (oracles) sit at the top and consumers (execution) at the bottom. This makes
  * `derived_from` edges flow in one direction and reduces crossings. `col` is the
  * position within the lane (time order).
  *
@@ -56,7 +56,7 @@ function agentOf(e: ChainEntry, laneFallback: string): string {
  * decision to another node it references (matched by blob_id). Dangling refs are
  * dropped.
  *
- * Caps: a large network is trimmed to keep rendering tractable — each lane keeps
+ * Caps: a large network is trimmed to keep rendering tractable. Each lane keeps
  * its most recent `maxPerLane` decisions, and the whole graph is capped at
  * `maxNodes`. `totalNodes` reports the pre-cap count so the UI can disclose it.
  */
@@ -73,11 +73,11 @@ export function buildDecisionGraph(chains: ChainEntry[][], opts: BuildOptions = 
     return { agent, origIndex: i, entries: trimmed };
   }).filter((l) => l.entries.length > 0);
 
-  // Map every (kept) blob to the agent that owns it — for depth + edge resolution.
+  // Map every (kept) blob to the agent that owns it, for depth + edge resolution.
   const blobToAgent = new Map<string, string>();
   for (const lane of lanes) for (const e of lane.entries) blobToAgent.set(e.blobId, lane.agent);
 
-  // Agent-level adjacency: agent → agents it derives from (present in the set).
+  // Agent-level adjacency: agent to agents it derives from (present in the set).
   const refsOf = new Map<string, Set<string>>();
   for (const lane of lanes) {
     const set = refsOf.get(lane.agent) ?? new Set<string>();

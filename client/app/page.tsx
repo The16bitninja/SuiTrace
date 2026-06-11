@@ -13,7 +13,7 @@ const history = await fetchDecisionChain(client, agentAddress);
 
 // ...agent decides using history as context...
 
-// Record the decision — uploaded to Walrus, hash anchored on Sui (audit).
+// Record the decision: uploaded to Walrus, hash anchored on Sui (audit).
 const prev = history.at(-1) ?? null;
 await recordDecision(client, signer, {
   agentAddress, seqNum: history.length,
@@ -30,14 +30,14 @@ const DEMO_LINKS = [
   { href: `/${TREASURY_AGENT}`,  label: "DAO Treasury agent",      note: "live on testnet · 2 decisions",       tone: "text-emerald-400" },
   { href: `/${NETWORK_ROOT}`,    label: "Multi-agent network",     note: "live on testnet · 6 agents, 11 traces", tone: "text-sky-400" },
   { href: "/demo-tampered",      label: "Tampered (simulated)",    note: "what tamper detection looks like",     tone: "text-red-400" },
-  { href: "/demo-offline",       label: "Unavailable (simulated)", note: "blob offline → UNAVAILABLE",           tone: "text-zinc-500" },
+  { href: "/demo-offline",       label: "Unavailable (simulated)", note: "blob offline -> UNAVAILABLE",          tone: "text-zinc-500" },
 ];
 
 const STEPS = [
   {
     n: "01",
     title: "Agent writes context to Walrus",
-    body: "The full decision context — prompt, oracle data, prior memory, tool results (5–50 KB) — is uploaded to Walrus as an epoch-certified, content-addressed blob.",
+    body: "The full decision context (prompt, oracle data, prior memory, tool results, 5 to 50 KB) is uploaded to Walrus as an epoch-certified, content-addressed blob.",
   },
   {
     n: "02",
@@ -46,23 +46,23 @@ const STEPS = [
   },
   {
     n: "03",
-    title: "Anyone verifies — trustlessly",
-    body: "Re-fetch the blob from Walrus, re-hash it, compare to the on-chain record. Match → VERIFIED. Mismatch → TAMPERED. No permission, no operator, no trust required.",
+    title: "Anyone verifies, trustlessly",
+    body: "Re-fetch the blob from Walrus, re-hash it, compare to the on-chain record. Match means VERIFIED. Mismatch means TAMPERED. No permission, no operator, no trust required.",
   },
 ];
 
 const WHY_WALRUS = [
   {
     title: "Built for large blobs",
-    body: "Decision context is 5–50 KB. On-chain storage is prohibitive — Walrus is designed exactly for this.",
+    body: "Decision context is 5 to 50 KB. On-chain storage is prohibitive, and Walrus is built for this.",
   },
   {
     title: "Epoch certification",
-    body: "Walrus proves when a blob existed. You cannot fake that an agent knew something after the fact — the timestamp is not editable.",
+    body: "Walrus proves when a blob existed. You cannot fake that an agent knew something after the fact, because the timestamp is not editable.",
   },
   {
     title: "Content-addressed",
-    body: "The blob ID is derived from its bytes. Alter one byte and the hash breaks — tampering is mathematically detectable.",
+    body: "The blob ID is derived from its bytes. Alter one byte and the hash breaks, so tampering is mathematically detectable.",
   },
   {
     title: "Permanent public URLs",
@@ -82,7 +82,7 @@ function Cell({ ok }: { ok: boolean }) {
   return ok ? (
     <span className="font-semibold text-emerald-400">✓</span>
   ) : (
-    <span className="text-zinc-700">—</span>
+    <span className="text-zinc-700">-</span>
   );
 }
 
@@ -110,7 +110,7 @@ export default function Home() {
             <StaggerItem>
               <p className="mt-5 max-w-xl text-lg leading-relaxed text-zinc-400">
                 SuiTrace gives every AI agent a tamper-evident decision log on Sui
-                and Walrus. Agents read their own history back as memory — and
+                and Walrus. Agents read their own history back as memory, and
                 anyone can independently verify what an agent knew and decided.
               </p>
             </StaggerItem>
@@ -118,7 +118,7 @@ export default function Home() {
             <StaggerItem className="mt-7 w-full max-w-lg">
               <SearchBar size="lg" />
               <p className="mt-2 text-sm text-zinc-500">
-                Enter any agent address — or{" "}
+                Enter any agent address, or{" "}
                 <Link href={`/${TREASURY_AGENT}`} className="font-medium text-sky-400 transition-colors hover:text-sky-300">
                   open the live demo
                 </Link>
@@ -158,7 +158,7 @@ export default function Home() {
           </h2>
           <p className="mt-4 text-2xl font-semibold leading-snug text-zinc-100 sm:text-3xl">
             A DAO agent manages $50K in treasury funds. The DAO votes to audit
-            it. Without SuiTrace, the operator controls the logs — and can
+            it. Without SuiTrace, the operator controls the logs, and can
             delete, alter, or fabricate the agent&apos;s reasoning.
           </p>
           <p className="mt-6 text-lg leading-relaxed text-zinc-400">
@@ -167,7 +167,7 @@ export default function Home() {
             retrievable by anyone. The operator cannot alter the blob without
             breaking the hash, or backdate it without breaking the epoch
             certificate. There is finally an independent record of what the
-            agent saw — and what it decided.
+            agent saw, and what it decided.
           </p>
         </Reveal>
       </section>
@@ -203,7 +203,7 @@ export default function Home() {
             </h3>
             <p className="mt-1 text-sm leading-relaxed text-sky-100/70">
               At the start of each session, an agent fetches its own decision
-              history from Walrus and uses it as context — making better
+              history from Walrus and uses it as context, making better
               decisions over time. The same blobs that make it auditable make it
               smarter. Memory and auditability are the same system.
             </p>
@@ -228,7 +228,7 @@ export default function Home() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/architecture.svg"
-              alt="SuiTrace system architecture — agents write through the SDK to Walrus (content) and Sui (fingerprint); anyone re-fetches and re-hashes to verify."
+              alt="SuiTrace system architecture: agents write through the SDK to Walrus (content) and Sui (fingerprint); anyone re-fetches and re-hashes to verify."
               className="w-full rounded-2xl shadow-[0_0_60px_-20px_rgba(56,189,248,0.25)]"
             />
           </Reveal>
@@ -243,7 +243,7 @@ export default function Home() {
               Why Walrus, specifically
             </h2>
             <p className="mt-3 text-lg text-zinc-400">
-              This isn&apos;t storage as an afterthought. Walrus is load-bearing
+              Storage here is not an afterthought. Walrus is load-bearing
               for both the memory and the audit guarantees.
             </p>
           </Reveal>
@@ -308,7 +308,7 @@ export default function Home() {
                 Add SuiTrace in ~10 lines
               </h2>
               <p className="mt-3 text-lg leading-relaxed text-zinc-400">
-                No registration, no permission step — the registry is a shared
+                No registration, no permission step. The registry is a shared
                 on-chain object and your keypair is your identity. Two SDK calls:
                 read your own memory back from Walrus, and record each decision
                 with its hash anchored on Sui.

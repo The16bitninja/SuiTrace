@@ -15,7 +15,7 @@ module suitrace::trace_log {
         id: UID,
         heads:   Table<address, DecisionRecord>,
         // Full history indexed by (agent, seq_num). Walrus chain traversal
-        // no longer requires Walrus to be reachable — metadata verification
+        // no longer requires Walrus to be reachable: metadata verification
         // can happen against on-chain records alone.
         history: Table<address, Table<u64, DecisionRecord>>,
     }

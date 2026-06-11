@@ -88,7 +88,7 @@ module suitrace::trace_log_tests {
         test_scenario::end(scenario);
     }
 
-    // Skipping a seq_num (0 → 2) must abort with EBadSeqNum.
+    // Skipping a seq_num (0 to 2) must abort with EBadSeqNum.
     #[test]
     #[expected_failure(abort_code = trace_log::EBadSeqNum)]
     fun test_skipped_seq_num_aborts() {
@@ -107,7 +107,7 @@ module suitrace::trace_log_tests {
                 0, 87, 97, b"HOLD",
                 test_scenario::ctx(&mut scenario),
             );
-            // seq_num=2 when head is seq=0 — must abort
+            // seq_num=2 when head is seq=0, must abort
             trace_log::record_decision(
                 &mut registry,
                 b"blob_2", fake_hash(0xCC), hash_0,
@@ -138,7 +138,7 @@ module suitrace::trace_log_tests {
                 0, 87, 97, b"HOLD",
                 test_scenario::ctx(&mut scenario),
             );
-            // prev_hash is 0xFF...FF instead of 0xAA...AA — must abort
+            // prev_hash is 0xFF...FF instead of 0xAA...AA, must abort
             trace_log::record_decision(
                 &mut registry,
                 b"blob_1", fake_hash(0xBB), fake_hash(0xFF),
@@ -258,7 +258,7 @@ module suitrace::trace_log_tests {
         test_scenario::end(scenario);
     }
 
-    // Writing seq=1 must not destroy the seq=0 record — both must be retrievable.
+    // Writing seq=1 must not destroy the seq=0 record; both must be retrievable.
     // This is the key test: with head-only storage, seq=0 would be gone after seq=1.
     #[test]
     fun test_history_preserves_old_records() {

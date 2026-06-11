@@ -56,7 +56,7 @@ async function main() {
   const result = verifyChain(chain);
   console.log(`\nCHAIN INTEGRITY: ${result.status}`);
   for (const d of result.details.filter((x) => x.status !== "PASS")) {
-    console.log(`  seq ${d.seqNum}: ${d.status} — ${d.reason}`);
+    console.log(`  seq ${d.seqNum}: ${d.status} - ${d.reason}`);
   }
   console.log();
 

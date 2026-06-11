@@ -15,8 +15,8 @@ export const suiClient = new SuiJsonRpcClient({
   network: SUI_NETWORK,
 });
 
-// Shared AgentRegistry object id. Server-only env var; empty until deployed.
-// (See TODO.md — deploy is blocked on testnet gas.)
+// Shared AgentRegistry object id. Server-only env var. Falls back to empty when
+// unset, which the read path treats as "no history" rather than an error.
 export const REGISTRY_ID =
   process.env.SUITRACE_REGISTRY_ID ??
   process.env.NEXT_PUBLIC_SUITRACE_REGISTRY_ID ??

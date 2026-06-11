@@ -1,5 +1,5 @@
 /**
- * Smoke test for Walrus HTTP API — no gas or Sui keypair needed.
+ * Smoke test for Walrus HTTP API: no gas or Sui keypair needed.
  * Uploads a blob, fetches it back, verifies the content matches.
  *
  * Run: npx tsx scripts/smoke-walrus.ts
@@ -9,7 +9,7 @@ import { uploadBlob, fetchBlob } from "../sdk/src/walrus.js";
 import { sha256 } from "js-sha256";
 
 async function main() {
-  const PAYLOAD = `SuiTrace Walrus smoke test — ${new Date().toISOString()}`;
+  const PAYLOAD = `SuiTrace Walrus smoke test: ${new Date().toISOString()}`;
   const bytes   = new TextEncoder().encode(PAYLOAD);
   const expectedHash = Buffer.from(sha256.array(bytes)).toString("hex");
 
@@ -37,7 +37,7 @@ async function main() {
   // ── Fetch ───────────────────────────────────────────────────────────────────
 
   console.log("\n2. Fetching blob back...");
-  // Brief pause — blob may not be immediately available on all aggregators
+  // Brief pause, blob may not be immediately available on all aggregators
   await new Promise(r => setTimeout(r, 2000));
 
   let fetched: Uint8Array;

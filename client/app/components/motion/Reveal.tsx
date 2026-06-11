@@ -7,7 +7,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
  * Fade + rise as the element scrolls into view. Animates once. Wrap any
- * server-rendered content in it — the children are rendered on the server and
+ * server-rendered content in it. The children are rendered on the server and
  * passed in, so this stays a thin client boundary.
  */
 export default function Reveal({

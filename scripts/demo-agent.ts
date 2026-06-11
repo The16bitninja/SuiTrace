@@ -1,8 +1,8 @@
 /**
  * SuiTrace two-session demo agent.
  *
- * Session 1 (no history):  HOLD — insufficient trend data
- * Session 2 (reads Walrus): BUY  — consecutive rises confirm uptrend
+ * Session 1 (no history):  HOLD, insufficient trend data
+ * Session 2 (reads Walrus): BUY, consecutive rises confirm uptrend
  *
  * Prerequisites:
  *   SUITRACE_PACKAGE_ID=0x...   (from sui client publish)
@@ -55,23 +55,23 @@ async function main() {
   const chain = await fetchDecisionChain(suiClient, agentAddress);
 
   if (chain.length === 0) {
-    console.log("  No prior history — this is a genesis run.\n");
+    console.log("  No prior history, this is a genesis run.\n");
   } else {
     console.log(`  Retrieved ${chain.length} prior decision(s):`);
     for (const e of chain) {
       const status = e.fetchFailed ? "UNREACHABLE" : e.hashMismatch ? "TAMPERED" : "✓";
-      console.log(`  [seq=${e.seqNum}] ${status} certified_epoch=${e.certifiedEpoch} — "${e.summary}"`);
+      console.log(`  [seq=${e.seqNum}] ${status} certified_epoch=${e.certifiedEpoch} : "${e.summary}"`);
     }
     console.log();
 
     // Verify chain integrity before using history as context
     const verification = verifyChain(chain);
     if (verification.status === "FAIL") {
-      console.error("⚠ Chain integrity FAILED — history may be tampered. Aborting.");
+      console.error("⚠ Chain integrity FAILED: history may be tampered. Aborting.");
       process.exit(1);
     }
     if (verification.status === "UNREACHABLE") {
-      console.warn("⚠ Some blobs unreachable — proceeding with partial history.");
+      console.warn("⚠ Some blobs unreachable, proceeding with partial history.");
     }
   }
 
@@ -97,11 +97,11 @@ async function main() {
   // because it has memory of session 1.
   let decision: string;
   if (priorDecisions.length === 0) {
-    decision = "HOLD — insufficient trend data for confident entry";
+    decision = "HOLD: insufficient trend data for confident entry";
   } else if (priorDecisions.every(d => d.decision.startsWith("HOLD"))) {
-    decision = `BUY — ${priorDecisions.length + 1} consecutive rises confirm uptrend (memory-informed)`;
+    decision = `BUY: ${priorDecisions.length + 1} consecutive rises confirm uptrend (memory-informed)`;
   } else {
-    decision = "HOLD — mixed signals from prior decisions";
+    decision = "HOLD: mixed signals from prior decisions";
   }
 
   const seqNum    = chain.length;
@@ -136,7 +136,7 @@ async function main() {
   console.log();
 
   if (seqNum === 0) {
-    console.log("Run again to see session 2 use this memory → BUY decision.");
+    console.log("Run again to see session 2 use this memory for a BUY decision.");
   } else {
     console.log("Two-session demo complete. Open the UI to verify the chain.");
   }

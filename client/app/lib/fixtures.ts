@@ -6,7 +6,7 @@ import type { ChainEntry } from "suitrace-sdk";
  *   - TAMPERED: a blob can't be altered after its hash is anchored.
  *   - UNAVAILABLE: a blob can't be made unreachable on demand.
  * Everything else (happy path, multi-agent pipeline) is served from the live
- * testnet chain via real agent addresses — these fixtures are only reached by
+ * testnet chain via real agent addresses. These fixtures are only reached by
  * the two sentinel addresses below.
  */
 
@@ -33,7 +33,7 @@ function session0(): ChainEntry {
     prevHash:       new Uint8Array(32),
     certifiedEpoch: 87,
     endEpoch:       137,
-    summary:        "HOLD — insufficient trend data for confident entry",
+    summary:        "HOLD: insufficient trend data for confident entry",
     fetchFailed:    false,
     hashMismatch:   false,
     content: {
@@ -44,7 +44,7 @@ function session0(): ChainEntry {
         oracle: { asset: "SUI/USD", price: 1.24, change_24h: "+8%", source: "pyth:SUI/USD" },
         prior_decisions: [],
       },
-      decision:     "HOLD — insufficient trend data for confident entry",
+      decision:     "HOLD: insufficient trend data for confident entry",
       prev_blob_id: null,
       prev_hash:    null,
     },
@@ -59,7 +59,7 @@ function session1(): ChainEntry {
     prevHash:       hash(0xa0),
     certifiedEpoch: 88,
     endEpoch:       138,
-    summary:        "BUY — 2 consecutive rises confirm uptrend (memory-informed)",
+    summary:        "BUY: 2 consecutive rises confirm uptrend (memory-informed)",
     fetchFailed:    false,
     hashMismatch:   false,
     content: {
@@ -69,10 +69,10 @@ function session1(): ChainEntry {
       context: {
         oracle: { asset: "SUI/USD", price: 1.35, change_24h: "+9%", source: "pyth:SUI/USD" },
         prior_decisions: [
-          { seq: 0, decision: "HOLD — insufficient trend data for confident entry" },
+          { seq: 0, decision: "HOLD: insufficient trend data for confident entry" },
         ],
       },
-      decision:     "BUY — 2 consecutive rises confirm uptrend (memory-informed)",
+      decision:     "BUY: 2 consecutive rises confirm uptrend (memory-informed)",
       prev_blob_id: "7xKpDemoBlobSession0AAAAAAAAAAAAAAAAAAAAAAAA",
       prev_hash:    Buffer.from(hash(0xa0)).toString("hex"),
     },
@@ -81,14 +81,14 @@ function session1(): ChainEntry {
 
 export function getFixtureChain(address: string): ChainEntry[] {
   if (address === DEMO_ADDRESSES.tampered) {
-    // seq 1 blob was altered after certification → hash no longer matches.
+    // seq 1 blob was altered after certification, so the hash no longer matches.
     const tampered = session1();
     tampered.hashMismatch = true;
     tampered.content = null;
     return [session0(), tampered];
   }
   if (address === DEMO_ADDRESSES.offline) {
-    // seq 1 blob is unreachable on Walrus → UNAVAILABLE, NOT tampered.
+    // seq 1 blob is unreachable on Walrus: UNAVAILABLE, NOT tampered.
     const offline = session1();
     offline.fetchFailed = true;
     offline.content = null;

@@ -85,7 +85,7 @@ export default function IntegrityVerifier({ result }: { result: VerifyResult }) 
           >
             {failing.map((d) => (
               <li key={d.seqNum}>
-                <span className="font-mono">seq {d.seqNum}</span> — {d.status}:{" "}
+                <span className="font-mono">seq {d.seqNum}</span>: {d.status}:{" "}
                 {d.reason}
               </li>
             ))}

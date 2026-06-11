@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SuiTrace — Verifiable AI Agent Memory",
+  title: "SuiTrace: Verifiable AI Agent Memory",
   description:
     "Inspect and cryptographically verify any AI agent's decision history on Sui + Walrus.",
 };

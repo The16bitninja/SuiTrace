@@ -8,7 +8,7 @@ import type { ChainEntry } from "../trace.js";
 describe("buildContextBlob", () => {
   const AGENT   = "0xcafe";
   const CONTEXT = { oracle: { price: 1.35 } };
-  const DECISION = "HOLD — no prior history";
+  const DECISION = "HOLD: no prior history";
 
   it("returns a 32-byte hash", () => {
     const { hash } = buildContextBlob(AGENT, 0, CONTEXT, DECISION, null, null);
@@ -134,7 +134,7 @@ describe("verifyChain", () => {
     expect(verifyChain(chain).status).toBe("FAIL");
   });
 
-  it("fetchFailed is UNREACHABLE not FAIL — reason string differs", () => {
+  it("fetchFailed is UNREACHABLE not FAIL, reason string differs", () => {
     const chain = [makeEntry({ seqNum: 0, fetchFailed: true })];
     const { details } = verifyChain(chain);
     expect(details[0].status).toBe("UNREACHABLE");

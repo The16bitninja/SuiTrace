@@ -48,7 +48,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 text-sm text-zinc-500 sm:flex-row sm:items-center">
-          <span>Built for Sui Overflow 2026 — Walrus track.</span>
+          <span>Built for Sui Overflow 2026, Walrus track.</span>
           <a
             href={GITHUB_URL}
             target="_blank"

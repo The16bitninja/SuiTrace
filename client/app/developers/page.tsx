@@ -5,7 +5,7 @@ import Reveal from "../components/motion/Reveal";
 import { Stagger, StaggerItem } from "../components/motion/Stagger";
 
 export const metadata: Metadata = {
-  title: "Developers — SuiTrace",
+  title: "Developers: SuiTrace",
   description:
     "Add tamper-evident, verifiable memory to any AI agent in ~10 lines. Read your history from Walrus, record decisions anchored on Sui.",
 };
@@ -20,7 +20,7 @@ const client = new SuiJsonRpcClient({
 const signer = Ed25519Keypair.fromSecretKey(process.env.AGENT_PRIVATE_KEY!);
 const agentAddress = signer.toSuiAddress();`;
 
-const ENV = `# The shared, public registry — same for every agent.
+const ENV = `# The shared, public registry, same for every agent.
 SUITRACE_PACKAGE_ID=0x...
 SUITRACE_REGISTRY_ID=0x...
 
@@ -37,7 +37,7 @@ const history = await fetchDecisionChain(client, agentAddress);
 // Optionally confirm nothing was tampered before trusting it.
 const check = verifyChain(history); // { status: "PASS" | "FAIL" | "UNREACHABLE", details }
 
-// Feed prior context into your prompt — this is the "memory" half.
+// Feed prior context into your prompt. This is the "memory" half.
 const priorMemory = history
   .filter((e) => !e.fetchFailed && !e.hashMismatch)
   .map((e) => e.content);`;
@@ -61,11 +61,11 @@ await recordDecision(client, signer, {
 const PREREQS = [
   {
     title: "A Sui keypair + gas",
-    body: "Any Ed25519 keypair with a little testnet SUI. The agent's address is its identity — no account to create.",
+    body: "Any Ed25519 keypair with a little testnet SUI. The agent's address is its identity, so there is no account to create.",
   },
   {
     title: "The public registry",
-    body: "One shared AgentRegistry serves every agent. Grab the PACKAGE_ID and REGISTRY_ID — that's all the config you need.",
+    body: "One shared AgentRegistry serves every agent. Grab the PACKAGE_ID and REGISTRY_ID, and that's all the config you need.",
   },
   {
     title: "The SDK",
@@ -87,7 +87,7 @@ export default function DevelopersPage() {
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-zinc-400">
             SuiTrace adds persistent, verifiable memory to an existing agent in
-            about ten lines — two SDK calls. There is{" "}
+            about ten lines, just two SDK calls. There is{" "}
             <span className="text-zinc-200">no registration and no permission step</span>:
             the registry is a shared on-chain object, and your keypair is your identity.
           </p>
@@ -133,7 +133,7 @@ export default function DevelopersPage() {
               Point the SDK at testnet and load your signing key. The
               <span className="font-mono text-zinc-300"> suitrace-sdk</span> package
               lives in <span className="font-mono text-zinc-300">sdk/</span> of the repo
-              (workspace package — not yet on npm).
+              (workspace package, not yet on npm).
             </p>
           </Reveal>
           <Reveal delay={0.05} className="mt-6">
@@ -156,7 +156,7 @@ export default function DevelopersPage() {
               At the start of each session, pull the agent&apos;s own decision
               chain back from Walrus and feed it into the prompt.
               <span className="text-zinc-300"> verifyChain</span> returns PASS,
-              FAIL (tampered), or UNREACHABLE (blob offline — never confused with
+              FAIL (tampered), or UNREACHABLE (blob offline, never confused with
               tampering).
             </p>
           </Reveal>
@@ -175,7 +175,7 @@ export default function DevelopersPage() {
             </h2>
             <p className="mt-3 text-lg text-zinc-400">
               After the agent decides, record it. The contract enforces the hash
-              chain — you just pass the previous entry. The write is two steps,
+              chain, so you just pass the previous entry. The write is two steps,
               <span className="text-zinc-300"> sequential, not atomic</span>:
               Walrus PUT, then the Sui transaction.
             </p>
@@ -195,7 +195,7 @@ export default function DevelopersPage() {
             </h3>
             <p className="mt-1 text-sm leading-relaxed text-sky-100/70">
               The TypeScript SDK is a convenience, not a requirement. Walrus is
-              plain HTTP (PUT/GET) and Sui has SDKs for Python, Rust, and Go — an
+              plain HTTP (PUT/GET) and Sui has SDKs for Python, Rust, and Go, so an
               agent in any stack can write to the same shared registry and read
               any other agent&apos;s public chain. No API contract, no
               intermediary.

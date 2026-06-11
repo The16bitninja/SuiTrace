@@ -37,8 +37,8 @@ export interface ChainEntry {
   endEpoch:       number;
   summary:        string;
   content:        ContextBlob | null;
-  fetchFailed:    boolean;   // network/404 — CONTEXT UNAVAILABLE, never TAMPERED
-  hashMismatch:   boolean;   // sha256 mismatch — TAMPERED
+  fetchFailed:    boolean;   // network/404: CONTEXT UNAVAILABLE, never TAMPERED
+  hashMismatch:   boolean;   // sha256 mismatch: TAMPERED
 }
 
 export type VerifyStatus = "PASS" | "FAIL" | "UNREACHABLE";
@@ -81,7 +81,7 @@ export function buildContextBlob(
 
 export function verifyChain(chain: ChainEntry[]): VerifyResult {
   const details = chain.map((e) => {
-    if (e.fetchFailed)  return { seqNum: e.seqNum, status: "UNREACHABLE" as const, reason: "blob fetch failed — context unavailable" };
+    if (e.fetchFailed)  return { seqNum: e.seqNum, status: "UNREACHABLE" as const, reason: "blob fetch failed: context unavailable" };
     if (e.hashMismatch) return { seqNum: e.seqNum, status: "FAIL"        as const, reason: `seq ${e.seqNum}: content_hash mismatch` };
     return               { seqNum: e.seqNum, status: "PASS"        as const, reason: "hash matches on-chain record" };
   });
@@ -121,12 +121,12 @@ export async function recordDecision(
     params.derivedFrom,
   );
 
-  // Step 1 — upload to Walrus (off-chain HTTP)
+  // Step 1: upload to Walrus (off-chain HTTP)
   console.log(`  Uploading blob (~${bytes.length}B) to Walrus...`);
   const { blobId, certifiedEpoch, endEpoch } = await uploadBlob(bytes, 50);
   console.log(`  blob_id=${blobId} epoch=${certifiedEpoch}→${endEpoch}`);
 
-  // Step 2 — anchor on Sui via PTB (sequential after step 1, NOT atomic)
+  // Step 2: anchor on Sui via PTB (sequential after step 1, NOT atomic)
   const tx = new Transaction();
   tx.moveCall({
     target:    `${PACKAGE_ID}::trace_log::record_decision`,
@@ -205,57 +205,68 @@ export async function fetchDecisionChain(
     name:     { type: "address", value: agentAddress },
   });
   const agentHistTableId = (agentHistField.data?.content as any)?.fields?.value?.fields?.id?.id as string;
-  if (!agentHistTableId) throw new Error("Could not read agent history table ID");
+  // Heads said this agent has history but the inner table is unreadable: degrade
+  // to an empty chain rather than throwing, matching every other failure path.
+  if (!agentHistTableId) return [];
 
-  // Fetch all records in order by seq_num
-  const entries: ChainEntry[] = [];
-
-  for (let seq = 0; seq <= latestSeq; seq++) {
-    const recField = await suiClient.getDynamicFieldObject({
-      parentId: agentHistTableId,
-      name:     { type: "u64", value: String(seq) },
-    });
-
-    const r          = (recField.data?.content as any)?.fields?.value?.fields;
-    const blobId     = bytesToString(r?.blob_id);
-    const contentHash = Uint8Array.from(r?.content_hash ?? []);
-
-    let content:     ContextBlob | null = null;
-    let fetchFailed  = false;
-    let hashMismatch = false;
-
-    try {
-      const rawBytes   = await fetchBlob(blobId);
-      const actualHash = new Uint8Array(sha256.array(rawBytes));
-      hashMismatch     = !arraysEqual(actualHash, contentHash);
-      if (!hashMismatch) {
-        content = JSON.parse(new TextDecoder().decode(rawBytes));
-      }
-    } catch {
-      fetchFailed = true; // network failure — NOT the same as TAMPERED
-    }
-
-    entries.push({
-      seqNum:         seq,
-      blobId,
-      contentHash,
-      prevHash:       Uint8Array.from(r?.prev_hash ?? []),
-      certifiedEpoch: Number(r?.certified_epoch ?? 0),
-      endEpoch:       Number(r?.end_epoch ?? 0),
-      summary:        bytesToString(r?.decision_summary),
-      content,
-      fetchFailed,
-      hashMismatch,
-    });
-  }
+  // Fetch every record concurrently, then assemble in seq order. Each record is
+  // an on-chain dynamic-field read plus a Walrus blob fetch; serial awaits would
+  // make a long chain noticeably slow.
+  const entries = await Promise.all(
+    Array.from({ length: latestSeq + 1 }, (_, seq) => readEntry(suiClient, agentHistTableId, seq)),
+  );
 
   return entries;
+}
+
+// Read a single decision record (on-chain metadata + Walrus blob) for one seq.
+async function readEntry(
+  suiClient:        SuiJsonRpcClient,
+  agentHistTableId: string,
+  seq:              number,
+): Promise<ChainEntry> {
+  const recField = await suiClient.getDynamicFieldObject({
+    parentId: agentHistTableId,
+    name:     { type: "u64", value: String(seq) },
+  });
+
+  const r          = (recField.data?.content as any)?.fields?.value?.fields;
+  const blobId     = bytesToString(r?.blob_id);
+  const contentHash = Uint8Array.from(r?.content_hash ?? []);
+
+  let content:     ContextBlob | null = null;
+  let fetchFailed  = false;
+  let hashMismatch = false;
+
+  try {
+    const rawBytes   = await fetchBlob(blobId);
+    const actualHash = new Uint8Array(sha256.array(rawBytes));
+    hashMismatch     = !arraysEqual(actualHash, contentHash);
+    if (!hashMismatch) {
+      content = JSON.parse(new TextDecoder().decode(rawBytes));
+    }
+  } catch {
+    fetchFailed = true; // network failure, NOT the same as TAMPERED
+  }
+
+  return {
+    seqNum:         seq,
+    blobId,
+    contentHash,
+    prevHash:       Uint8Array.from(r?.prev_hash ?? []),
+    certifiedEpoch: Number(r?.certified_epoch ?? 0),
+    endEpoch:       Number(r?.end_epoch ?? 0),
+    summary:        bytesToString(r?.decision_summary),
+    content,
+    fetchFailed,
+    hashMismatch,
+  };
 }
 
 /**
  * Walk the cross-agent provenance graph starting from one agent: fetch its chain,
  * follow `derived_from` references to other agents, and fetch those too (bounded,
- * deduped). Returns one chain per agent, root first — feed straight into
+ * deduped). Returns one chain per agent, root first, ready to feed straight into
  * buildDecisionGraph for a multi-lane provenance DAG.
  */
 export async function fetchProvenance(

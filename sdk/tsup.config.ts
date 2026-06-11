@@ -8,6 +8,6 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   target: "es2022",
-  // peers / runtime deps stay external — not bundled into dist
+  // peers / runtime deps stay external, not bundled into dist
   external: ["@mysten/sui", "js-sha256"],
 });

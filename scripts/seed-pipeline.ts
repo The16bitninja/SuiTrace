@@ -9,7 +9,7 @@
  *   tsx scripts/seed-pipeline.ts
  *
  * Prints the three agent addresses. Point the UI's pipeline link at the
- * EXECUTION address — the page walks `derived_from` back to Strategy & Research.
+ * EXECUTION address: the page walks `derived_from` back to Strategy & Research.
  */
 
 import { SuiJsonRpcClient, getJsonRpcFullnodeUrl } from "@mysten/sui/jsonRpc";
@@ -72,13 +72,13 @@ async function main() {
   });
   console.log(`  res blob ${r1.blobId}\n`);
 
-  // 3. Strategy derives from Research's artifact (use the returned hash — no re-fetch,
+  // 3. Strategy derives from Research's artifact (use the returned hash, no re-fetch,
   //    which avoids dynamic-field indexing lag on the public fullnode).
   console.log("Strategy: recording allocation (derived from Research)...");
   const s1 = await recordDecision(client, strategy, {
     agentAddress: STR, seqNum: 0,
     context: { research_from: RES, rationale: "Act on research finding" },
-    decision: "BUY 10% SUI — based on research",
+    decision: "BUY 10% SUI: based on research",
     summary: "BUY 10% SUI allocation",
     prevBlobId: null, prevHash: null,
     derivedFrom: [{ agent: RES, blob_id: r1.blobId, content_hash: hex(r1.contentHash) }],

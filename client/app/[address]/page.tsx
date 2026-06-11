@@ -8,7 +8,7 @@ import IntegrityVerifier from "../components/IntegrityVerifier";
 import DecisionsView from "../components/DecisionsView";
 import Reveal from "../components/motion/Reveal";
 
-// Always fetch fresh — this is a live verification tool, not a cached view.
+// Always fetch fresh. This is a live verification tool, not a cached view.
 // (Intentionally dynamic, so the static-prefetch `unstable_instant` opt-in
 // does not apply here.)
 export const dynamic = "force-dynamic";
@@ -55,7 +55,7 @@ export default async function AgentPage({
 
         {demo && (
           <p className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
-            Simulated — this state can&apos;t exist as real on-chain data (a blob
+            Simulated: this state can&apos;t exist as real on-chain data (a blob
             can&apos;t be tampered after its hash is anchored, nor made unreachable
             on demand). It shows what detection looks like. All other agents on
             this site load live testnet data.
@@ -69,7 +69,7 @@ export default async function AgentPage({
           <p className="mt-1 text-sm text-zinc-500">
             {isDeployed()
               ? "This agent has not recorded any decisions yet."
-              : "The registry is not deployed yet — try a demo address from the home page."}
+              : "The registry is not deployed yet. Try a demo address from the home page."}
           </p>
         </div>
       ) : (
