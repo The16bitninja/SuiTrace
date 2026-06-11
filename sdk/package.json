@@ -1,6 +1,6 @@
 {
   "name": "suitrace-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Verifiable episodic memory for AI agents on Sui + Walrus — write, read, and verify tamper-evident decision chains.",
   "license": "Apache-2.0",
   "type": "module",
