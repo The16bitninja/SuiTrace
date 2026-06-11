@@ -24,13 +24,13 @@ await recordDecision(client, signer, {
 
 // Real agents recorded on Sui testnet (live chain data).
 const TREASURY_AGENT = "0x9e7a2c08cfcd35e83171bf61bb15d04800f516f746f4cb1e5ac802759a090025";
-const PIPELINE_EXECUTION = "0x5b164d63438e05d8c501676df1036f20316d69efae539c32e1653f94a190dde9";
+const NETWORK_ROOT = "0xa77013eea710650ab56891d33861c435a0f4ab4b160a7a70f8bed2276e0f94c6";
 
 const DEMO_LINKS = [
-  { href: `/${TREASURY_AGENT}`,     label: "DAO Treasury agent",      note: "live on testnet · 2 decisions", tone: "text-emerald-400" },
-  { href: `/${PIPELINE_EXECUTION}`, label: "Multi-agent pipeline",    note: "live on testnet · 3 agents",    tone: "text-sky-400" },
-  { href: "/demo-tampered",         label: "Tampered (simulated)",    note: "what tamper detection looks like", tone: "text-red-400" },
-  { href: "/demo-offline",          label: "Unavailable (simulated)", note: "blob offline → UNAVAILABLE",       tone: "text-zinc-500" },
+  { href: `/${TREASURY_AGENT}`,  label: "DAO Treasury agent",      note: "live on testnet · 2 decisions",       tone: "text-emerald-400" },
+  { href: `/${NETWORK_ROOT}`,    label: "Multi-agent network",     note: "live on testnet · 6 agents, 11 traces", tone: "text-sky-400" },
+  { href: "/demo-tampered",      label: "Tampered (simulated)",    note: "what tamper detection looks like",     tone: "text-red-400" },
+  { href: "/demo-offline",       label: "Unavailable (simulated)", note: "blob offline → UNAVAILABLE",           tone: "text-zinc-500" },
 ];
 
 const STEPS = [
@@ -119,7 +119,7 @@ export default function Home() {
               <SearchBar size="lg" />
               <p className="mt-2 text-sm text-zinc-500">
                 Enter any agent address — or{" "}
-                <Link href="/demo" className="font-medium text-sky-400 transition-colors hover:text-sky-300">
+                <Link href={`/${TREASURY_AGENT}`} className="font-medium text-sky-400 transition-colors hover:text-sky-300">
                   open the live demo
                 </Link>
                 .
@@ -207,6 +207,30 @@ export default function Home() {
               decisions over time. The same blobs that make it auditable make it
               smarter. Memory and auditability are the same system.
             </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── Architecture ─────────────────────────────────────────────────── */}
+      <section id="architecture" className="border-b border-white/10">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <Reveal className="max-w-2xl">
+            <h2 className="text-3xl font-bold tracking-tight text-zinc-50">
+              Architecture
+            </h2>
+            <p className="mt-3 text-lg text-zinc-400">
+              Walrus stores the content, Sui stores the fingerprint, and the SDK is
+              the only bridge between them. Anyone can re-fetch a blob and re-hash it
+              to confirm the two still agree.
+            </p>
+          </Reveal>
+          <Reveal delay={0.05} className="mt-10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/architecture.svg"
+              alt="SuiTrace system architecture — agents write through the SDK to Walrus (content) and Sui (fingerprint); anyone re-fetches and re-hashes to verify."
+              className="w-full rounded-2xl shadow-[0_0_60px_-20px_rgba(56,189,248,0.25)]"
+            />
           </Reveal>
         </div>
       </section>

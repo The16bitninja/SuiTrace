@@ -262,7 +262,7 @@ export async function fetchProvenance(
   suiClient:   SuiJsonRpcClient,
   rootAddress: string,
   registryId:  string = REGISTRY_ID,
-  maxDepth     = 2,
+  maxDepth     = 6,
 ): Promise<ChainEntry[][]> {
   const seen = new Set<string>();
   const result: ChainEntry[][] = [];

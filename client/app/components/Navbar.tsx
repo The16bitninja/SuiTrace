@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
+// Ordered to match the section order on the landing page.
 const NAV_LINKS = [
   { href: "/#how-it-works", label: "How it works" },
+  { href: "/#architecture", label: "Architecture" },
   { href: "/#why-walrus", label: "Why Walrus" },
   { href: "/#compare", label: "Compare" },
   { href: "/developers", label: "Developers" },

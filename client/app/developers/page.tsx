@@ -216,7 +216,7 @@ export default function DevelopersPage() {
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Link
-                href="/demo"
+                href="/0x9e7a2c08cfcd35e83171bf61bb15d04800f516f746f4cb1e5ac802759a090025"
                 className="rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200"
               >
                 Try the demo →
