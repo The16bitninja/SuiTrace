@@ -1,100 +1,103 @@
 <div align="center">
 
-# 🔗 SuiTrace
+<img src="./suitrace-icon.png" alt="SuiTrace logo" width="120" height="120" />
+
+# SuiTrace
 
 ### Verifiable episodic memory for AI agents on Sui + Walrus
 
-*The same Walrus blobs that make an agent smarter make it independently auditable.*
+*The same Walrus blobs that make an agent smarter also make it independently auditable.*
 
 [![npm version](https://img.shields.io/npm/v/suitrace-sdk?color=38bdf8&label=suitrace-sdk)](https://www.npmjs.com/package/suitrace-sdk)
 [![Sui](https://img.shields.io/badge/Sui-testnet-6fbcf0)](https://suiscan.xyz/testnet)
 [![Walrus](https://img.shields.io/badge/Walrus-testnet-22d3ee)](https://www.walrus.xyz/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 
-*Built for Sui Overflow 2026 — Walrus track.*
+*Built for Sui Overflow 2026, Walrus track.*
 
 </div>
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
-- [Project Overview](#-project-overview)
-- [Problem Statement](#-problem-statement)
-- [Our Approach](#-our-approach)
-- [Challenges We Faced](#-challenges-we-faced)
-- [Technologies We Used](#-technologies-we-used)
-- [Architecture & Diagrams](#-architecture--diagrams)
-- [Installation & Setup Guide](#-installation--setup-guide)
-- [Team](#-team)
-- [Contract Deployment](#-contract-deployment)
+- [Project Overview](#project-overview)
+- [Problem Statement](#problem-statement)
+- [Our Approach](#our-approach)
+- [Challenges We Faced](#challenges-we-faced)
+- [Technologies We Used](#technologies-we-used)
+- [Architecture & Diagrams](#architecture--diagrams)
+- [Installation & Setup Guide](#installation--setup-guide)
+- [Team](#team)
+- [Contract Deployment](#contract-deployment)
 
 ---
 
-## 🧭 Project Overview
+## Project Overview
 
 **SuiTrace** gives every AI agent a tamper-evident, independently-verifiable decision
-log. An agent writes the full context behind each decision — the prompt, oracle data,
-prior memory, and tool results — to **Walrus** as an epoch-certified blob, then anchors
+log. An agent writes the full context behind each decision (the prompt, oracle data,
+prior memory, and tool results) to **Walrus** as an epoch-certified blob, then anchors
 only the blob's hash and a chain link on **Sui**. At the start of every session the agent
 reads its own history back from Walrus and feeds it into the prompt, so the record that
 makes it auditable is the same record that makes it smarter.
 
-Anyone — a DAO, an auditor, a skeptic with `curl` — can re-fetch a blob, re-hash it, and
-compare against the on-chain record to prove exactly what an agent knew and decided. No
-operator, no permission, no trust required.
+Anyone (a DAO, an auditor, or anyone with `curl`) can re-fetch a blob, re-hash it, and
+compare it against the on-chain record to prove exactly what an agent knew and decided. No
+operator, permission, or trust required.
 
 > DocuSign controls your signed documents. SuiTrace removes the operator's control over
 > your AI agent's decision history.
 
 ---
 
-## ❗ Problem Statement
+## Problem Statement
 
 A DAO agent manages $50K in treasury funds. The DAO votes to audit it. Today, the
-**operator controls the logs** — and that breaks accountability in four ways:
+**operator controls the logs**, which breaks accountability in four ways:
 
 1. **Logs can be altered or deleted.** Whoever runs the agent can rewrite its reasoning
    after the fact, and no one can tell.
-2. **Decisions can be backdated or fabricated.** There's no proof of *when* an agent knew
-   something — or whether a "decision" ever happened.
-3. **Observability ≠ verifiability.** Tools like LangSmith/Langfuse show logs, but they're
-   mutable database rows the provider can change. "Immutable" is marketing, not math.
-4. **No independent record.** An auditor has to trust the same party they're auditing.
+2. **Decisions can be backdated or fabricated.** There is no proof of *when* an agent knew
+   something, or whether a "decision" ever happened at all.
+3. **Observability is not verifiability.** Tools like LangSmith and Langfuse show logs, but
+   those are mutable database rows the provider can change.
+4. **No independent record.** An auditor has to trust the same party they are auditing.
 
 SuiTrace makes the record **cryptographically tamper-evident and operator-independent**:
 alter the blob and the hash breaks; backdate it and the Walrus epoch certificate breaks.
 
 ---
 
-## 💡 Our Approach
+## Our Approach
 
 Walrus stores the **content**. Sui stores the **fingerprint**. The SDK is the only bridge.
 
 ### 1. Write context to Walrus
-The full decision context (5–50 KB) is uploaded to Walrus as an epoch-certified,
+The full decision context (5 to 50 KB) is uploaded to Walrus as an epoch-certified,
 content-addressed blob. On-chain storage would be prohibitively expensive; Walrus is
-built for exactly this, and proves *when* the blob existed.
+built for this, and it proves *when* the blob existed.
 
 ### 2. Anchor the hash on Sui
-A SHA-256 of the blob, the previous decision's hash (chain link), and the Walrus epoch
+A SHA-256 of the blob, the previous decision's hash (the chain link), and the Walrus epoch
 are committed on-chain via a programmable transaction. The Move contract enforces
-sequence + hash-chain integrity, and identity comes from `tx_context::sender()` — no
-impersonation. *(The two steps are sequential, not atomic: Walrus PUT, then the Sui PTB.)*
+sequence and hash-chain integrity, and identity comes from `tx_context::sender()`, so
+there is no impersonation. The two steps are sequential, not atomic: the Walrus PUT runs
+first, then the Sui PTB.
 
 ### 3. Verify trustlessly
-Re-fetch the blob, re-hash it, compare to the on-chain record:
-- **match → VERIFIED**
-- **mismatch → TAMPERED**
-- **blob unreachable → CONTEXT UNAVAILABLE** (never conflated with tampering)
+Re-fetch the blob, re-hash it, and compare it to the on-chain record:
+- match means VERIFIED
+- mismatch means TAMPERED
+- an unreachable blob means CONTEXT UNAVAILABLE (never conflated with tampering)
 
 ### 4. The memory loop
 At session start the agent calls `fetchDecisionChain`, verifies it, and feeds prior
-context into its prompt — making better decisions over time. Cross-agent `derived_from`
+context into its prompt, making better decisions over time. Cross-agent `derived_from`
 references turn many agents' chains into one traversable **provenance graph**.
 
-**Add it to an agent in ~10 lines** (no registration — the registry is a shared on-chain
-object and your keypair is your identity):
+**Add it to an agent in about 10 lines.** No registration is needed: the registry is a
+shared on-chain object and your keypair is your identity.
 
 ```bash
 npm i suitrace-sdk @mysten/sui
@@ -114,39 +117,39 @@ await recordDecision(client, signer, {                            // record + an
 
 ---
 
-## 🧩 Challenges We Faced
+## Challenges We Faced
 
 ### Sui / Move
 - **Storing only the head wasn't enough.** Chain verification would have depended on
   Walrus being reachable. We added a second on-chain `history` table (`agent → seq →
   record`) so the hash chain is fully verifiable from Sui alone.
 - **Dynamic-field indexing lag.** Reading a record back immediately after writing it hit
-  propagation lag on the public fullnode; `recordDecision` returns the content hash so
+  propagation lag on the public fullnode, so `recordDecision` returns the content hash and
   multi-agent seeding never has to re-read what it just wrote.
 - **Modern Move package management.** Publishing is environment-aware (`testnet` is pinned
-  in `Move.lock`); local publishing needed `test-publish`.
+  in `Move.lock`), and local publishing needed `test-publish`.
 
 ### Walrus
-- **The `/metadata` endpoint 404s on testnet** - epoch data actually comes back in the
-  upload response (`certifiedEpoch` / `endEpoch`).
+- **The `/metadata` endpoint 404s on testnet.** Epoch data comes back in the upload
+  response instead (`certifiedEpoch` / `endEpoch`).
 - **Two upload response shapes** (`newlyCreated` vs `alreadyCertified`) both had to be
   handled.
 
 ### TypeScript SDK / npm
-- **`@mysten/sui` v2 restructured its API** - `SuiClient`/`getFullnodeUrl` moved to
-  `SuiJsonRpcClient`/`getJsonRpcFullnodeUrl` under `@mysten/sui/jsonRpc`.
+- **`@mysten/sui` v2 restructured its API.** `SuiClient` / `getFullnodeUrl` moved to
+  `SuiJsonRpcClient` / `getJsonRpcFullnodeUrl` under `@mysten/sui/jsonRpc`.
 - **`npm publish` ignores pnpm's `publishConfig` field-replacement.** A first publish
-  shipped entry points pointing at unbundled `src/`; fixed by making the top-level
+  shipped entry points pointing at unbundled `src/`; we fixed it by making the top-level
   `exports` point at the built `dist/` directly.
 
 ### Frontend (Next.js 16)
-- **`params`/`searchParams` are now Promises** — every dynamic route awaits them.
-- **Graph rendering at scale** — the provenance graph caps nodes (`maxNodes`/`maxPerLane`)
+- **`params` / `searchParams` are now Promises**, so every dynamic route awaits them.
+- **Graph rendering at scale.** The provenance graph caps nodes (`maxNodes` / `maxPerLane`)
   and orders lanes by dependency depth so a large network stays renderable.
 
 ---
 
-## 🛠 Technologies We Used
+## Technologies We Used
 
 ![Move](https://img.shields.io/badge/Move-4DA2FF?logo=move&logoColor=white)
 ![Sui](https://img.shields.io/badge/Sui-6fbcf0?logo=sui&logoColor=white)
@@ -159,30 +162,30 @@ await recordDecision(client, signer, {                            // record + an
 ![tsup](https://img.shields.io/badge/tsup-FE7A16)
 ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white)
 
-- **Contract:** Move on Sui — `AgentRegistry` shared object + `record_decision` (11 tests)
-- **Storage:** Walrus (testnet) — epoch-certified, content-addressed blobs
-- **SDK:** TypeScript ([`suitrace-sdk`](https://www.npmjs.com/package/suitrace-sdk)) — Walrus HTTP client + write/read/verify/graph (16 tests), built with tsup, tested with Vitest
-- **Web UI:** Next.js 16 + React 19 + Tailwind v4, provenance graph via React Flow
+- **Contract:** Move on Sui. `AgentRegistry` shared object + `record_decision` (11 tests).
+- **Storage:** Walrus (testnet). Epoch-certified, content-addressed blobs.
+- **SDK:** TypeScript ([`suitrace-sdk`](https://www.npmjs.com/package/suitrace-sdk)). Walrus HTTP client + write/read/verify/graph (16 tests), built with tsup, tested with Vitest.
+- **Web UI:** Next.js 16 + React 19 + Tailwind v4, with the provenance graph rendered via React Flow.
 
 ---
 
-## 🗺 Architecture & Diagrams
+## Architecture & Diagrams
 
 ![SuiTrace system architecture](docs/architecture.png)
 
-The contract and Walrus never talk to each other — the SDK is the only bridge. Sui holds
-the fingerprint (`content_hash`), Walrus holds the content, and anyone can re-fetch +
+The contract and Walrus never talk to each other; the SDK is the only bridge. Sui holds
+the fingerprint (`content_hash`), Walrus holds the content, and anyone can re-fetch and
 re-hash to confirm the two still agree.
 
 - **Write path:** Agent → SDK → Walrus (upload) → Sui (anchor hash via PTB)
-- **Read/verify path:** SDK reads the registry, fetches the blob, compares hashes →
-  VERIFIED / TAMPERED / UNAVAILABLE
+- **Read/verify path:** the SDK reads the registry, fetches the blob, and compares hashes,
+  yielding VERIFIED, TAMPERED, or UNAVAILABLE
 - **Provenance:** `derived_from` references weave multiple agents into one graph, rendered
   live in the web UI (source: [`client/public/architecture.svg`](client/public/architecture.svg))
 
 ---
 
-## ⚙️ Installation & Setup Guide
+## Installation & Setup Guide
 
 ### Contract
 ```bash
@@ -215,7 +218,7 @@ cd contracts && sui client test-publish --build-env testnet --gas-budget 2000000
 # 4. Put SUITRACE_PACKAGE_ID / SUITRACE_REGISTRY_ID / AGENT_PRIVATE_KEY in .env
 #    (+ SUI_RPC_URL=http://127.0.0.1:9000, SUI_NETWORK=localnet for local)
 
-# 5. Two-session demo — session 2 reads session 1 from Walrus and decides differently
+# 5. Two-session demo: session 2 reads session 1 from Walrus and decides differently
 set -a; . ./.env; set +a
 pnpm demo              # session 1 -> HOLD
 pnpm demo              # session 2 -> BUY (memory-informed)
@@ -236,7 +239,7 @@ VERIFIED / TAMPERED / CONTEXT UNAVAILABLE badge.
 
 ---
 
-## 👥 Team
+## Team
 
 - [The16bitninja (Vedant Tarale)](https://github.com/The16bitninja)
 - [VaibhavBaheti28 (Vaibhav Baheti)](https://github.com/VaibhavBaheti28)
@@ -244,7 +247,7 @@ VERIFIED / TAMPERED / CONTEXT UNAVAILABLE badge.
 
 ---
 
-## 📜 Contract Deployment
+## Contract Deployment
 
 Live on **Sui testnet** · Walrus **testnet**.
 
@@ -253,13 +256,13 @@ Live on **Sui testnet** · Walrus **testnet**.
 | Package | [`0xc99c1f17142086ddc3ecfc04bda67660ba96f1d3c85ea1b05911fdaf80984038`](https://suiscan.xyz/testnet/object/0xc99c1f17142086ddc3ecfc04bda67660ba96f1d3c85ea1b05911fdaf80984038) |
 | AgentRegistry (shared) | [`0xd4aeb1b24182906151ac00ad5485c8de18865bb9ef34a5e323331e5d7fdfa327`](https://suiscan.xyz/testnet/object/0xd4aeb1b24182906151ac00ad5485c8de18865bb9ef34a5e323331e5d7fdfa327) |
 
-**Single-agent demo (memory loop):** `HOLD` → memory-informed `BUY`
+**Single-agent demo (memory loop):** `HOLD` then a memory-informed `BUY`.
 
 | Agent | Address |
 |---|---|
 | DAO Treasury | [`0x9e7a2c08…090025`](https://suiscan.xyz/testnet/account/0x9e7a2c08cfcd35e83171bf61bb15d04800f516f746f4cb1e5ac802759a090025) |
 
-**Multi-agent network (busy provenance graph)** — 6 agents, 11 decisions, dense
+**Multi-agent network (busy provenance graph):** 6 agents, 11 decisions, dense
 `derived_from` references. View the **Execution** agent to render the whole network.
 
 | Agent | Address | Role |

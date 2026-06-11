@@ -9,9 +9,14 @@ export default function Footer() {
         <div className="flex flex-col justify-between gap-8 md:flex-row">
           <div className="max-w-sm">
             <div className="flex items-center gap-2">
-              <span className="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-sky-400 to-cyan-300 text-sm font-bold text-zinc-950 shadow-[0_0_18px_-4px_rgba(56,189,248,0.6)]">
-                S
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/suitrace-icon.svg"
+                alt="SuiTrace logo"
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-md"
+              />
               <span className="text-lg font-bold tracking-tight text-zinc-100">
                 SuiTrace
               </span>
