@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     "Add tamper-evident, verifiable memory to any AI agent in ~10 lines. Read your history from Walrus, record decisions anchored on Sui.",
 };
 
+const INSTALL = `npm i suitrace-sdk @mysten/sui`;
+
 const SETUP = `import { SuiJsonRpcClient, getJsonRpcFullnodeUrl } from "@mysten/sui/jsonRpc";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 
@@ -69,7 +71,7 @@ const PREREQS = [
   },
   {
     title: "The SDK",
-    body: "suitrace-sdk wraps the Walrus upload and the Sui transaction. Two functions: fetchDecisionChain and recordDecision.",
+    body: "suitrace-sdk (published on npm) wraps the Walrus upload and the Sui transaction. Two functions: fetchDecisionChain and recordDecision.",
   },
 ];
 
@@ -130,16 +132,25 @@ export default function DevelopersPage() {
               1. Connect
             </h2>
             <p className="mt-3 text-lg text-zinc-400">
-              Point the SDK at testnet and load your signing key. The
-              <span className="font-mono text-zinc-300"> suitrace-sdk</span> package
-              lives in <span className="font-mono text-zinc-300">sdk/</span> of the repo
-              (workspace package, not yet on npm).
+              Install{" "}
+              <a
+                href="https://www.npmjs.com/package/suitrace-sdk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-sky-400 transition-colors hover:text-sky-300"
+              >
+                suitrace-sdk
+              </a>{" "}
+              from npm, then point the SDK at testnet and load your signing key.
             </p>
           </Reveal>
           <Reveal delay={0.05} className="mt-6">
-            <CodeBlock code={SETUP} lang="ts" />
+            <CodeBlock code={INSTALL} lang="bash" />
           </Reveal>
           <Reveal delay={0.1} className="mt-4">
+            <CodeBlock code={SETUP} lang="ts" />
+          </Reveal>
+          <Reveal delay={0.15} className="mt-4">
             <CodeBlock code={ENV} lang="env" />
           </Reveal>
         </div>
