@@ -20,7 +20,7 @@
     "url": "git+https://github.com/The16bitninja/SuiTrace.git",
     "directory": "sdk"
   },
-  "homepage": "https://github.com/The16bitninja/SuiTrace/sdk#readme",
+  "homepage": "https://github.com/The16bitninja/SuiTrace/tree/main/sdk#readme",
   "bugs": "https://github.com/The16bitninja/SuiTrace/issues",
   "comment": "Top-level exports point at src for in-repo dev (Next transpilePackages). publishConfig swaps to the built dist at publish time (pnpm field replacement).",
   "main": "./src/index.ts",
