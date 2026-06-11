@@ -29,7 +29,7 @@ SUITRACE_REGISTRY_ID=0x...
 #   sui keytool export --key-identity <addr> --json   -> exportedKey
 AGENT_PRIVATE_KEY=suiprivkey1...`;
 
-const READ = `import { fetchDecisionChain, verifyChain } from "@suitrace/sdk";
+const READ = `import { fetchDecisionChain, verifyChain } from "suitrace-sdk";
 
 // At session start: read your own decision history back from Walrus.
 const history = await fetchDecisionChain(client, agentAddress);
@@ -42,7 +42,7 @@ const priorMemory = history
   .filter((e) => !e.fetchFailed && !e.hashMismatch)
   .map((e) => e.content);`;
 
-const WRITE = `import { recordDecision } from "@suitrace/sdk";
+const WRITE = `import { recordDecision } from "suitrace-sdk";
 
 // ...your agent decides something using priorMemory as context...
 
@@ -69,7 +69,7 @@ const PREREQS = [
   },
   {
     title: "The SDK",
-    body: "@suitrace/sdk wraps the Walrus upload and the Sui transaction. Two functions: fetchDecisionChain and recordDecision.",
+    body: "suitrace-sdk wraps the Walrus upload and the Sui transaction. Two functions: fetchDecisionChain and recordDecision.",
   },
 ];
 
@@ -131,7 +131,7 @@ export default function DevelopersPage() {
             </h2>
             <p className="mt-3 text-lg text-zinc-400">
               Point the SDK at testnet and load your signing key. The
-              <span className="font-mono text-zinc-300"> @suitrace/sdk</span> package
+              <span className="font-mono text-zinc-300"> suitrace-sdk</span> package
               lives in <span className="font-mono text-zinc-300">sdk/</span> of the repo
               (workspace package — not yet on npm).
             </p>

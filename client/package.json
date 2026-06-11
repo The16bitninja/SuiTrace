@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@mysten/sui": "^2.17.0",
-    "@suitrace/sdk": "workspace:*",
+    "suitrace-sdk": "workspace:*",
     "js-sha256": "^0.11.1",
     "motion": "^12.40.0",
     "next": "16.2.7",

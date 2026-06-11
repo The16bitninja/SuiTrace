@@ -74,7 +74,7 @@
   <g filter="url(#glow)">
     <rect x="440" y="200" width="320" height="108" rx="16" fill="url(#sdkfill)" stroke="url(#brand)" stroke-width="2"/>
   </g>
-  <text class="title" x="600" y="236" font-size="17" text-anchor="middle">@suitrace/sdk</text>
+  <text class="title" x="600" y="236" font-size="17" text-anchor="middle">suitrace-sdk</text>
   <text x="600" y="260" font-size="12.5" fill="#7dd3fc" text-anchor="middle" font-family="ui-monospace, monospace">trace.ts · walrus.ts · graph.ts</text>
   <text class="sub" x="600" y="284" font-size="12" text-anchor="middle">the only bridge between the two stores</text>
 

@@ -1,0 +1,15 @@
+nohup: ignoring input
+
+> client@0.1.0 dev
+> next dev
+
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+▲ Next.js 16.2.7 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://10.0.0.3:3001
+- Environments: .env.local
+✓ Ready in 353ms
+
+ GET /developers 200 in 446ms (next.js: 127ms, application-code: 319ms)
+ GET / 200 in 84ms (next.js: 24ms, application-code: 60ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior

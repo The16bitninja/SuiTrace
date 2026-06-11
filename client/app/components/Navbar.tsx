@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { href: "/#demo", label: "Demo" },
 ];
 
-const GITHUB_URL = "https://github.com/VedantTarale/SuiTrace";
+const GITHUB_URL = "https://github.com/The16bitninja/SuiTrace";
 
 function BrandMark() {
   return (

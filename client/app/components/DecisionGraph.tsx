@@ -17,7 +17,7 @@ import {
   type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import type { DecisionGraph as GraphData, GraphNode, NodeStatus } from "@suitrace/sdk";
+import type { DecisionGraph as GraphData, GraphNode, NodeStatus } from "suitrace-sdk";
 
 const STATUS: Record<NodeStatus, { color: string; label: string }> = {
   VERIFIED:    { color: "#10b981", label: "VERIFIED" },

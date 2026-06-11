@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fetchDecisionChain } from "@suitrace/sdk";
+import { fetchDecisionChain } from "suitrace-sdk";
 import { suiClient, REGISTRY_ID, WALRUS_AGGREGATOR } from "../../lib/sui";
 import { getFixtureChain, isDemoAddress } from "../../lib/fixtures";
 import CertBadge from "../../components/CertBadge";

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import type { VerifyResult } from "@suitrace/sdk";
+import type { VerifyResult } from "suitrace-sdk";
 
 export default function IntegrityVerifier({ result }: { result: VerifyResult }) {
   const router = useRouter();

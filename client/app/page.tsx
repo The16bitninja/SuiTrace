@@ -6,7 +6,7 @@ import Aurora from "./components/motion/Aurora";
 import Reveal from "./components/motion/Reveal";
 import { Stagger, StaggerItem } from "./components/motion/Stagger";
 
-const INTEGRATION_SNIPPET = `import { fetchDecisionChain, recordDecision } from "@suitrace/sdk";
+const INTEGRATION_SNIPPET = `import { fetchDecisionChain, recordDecision } from "suitrace-sdk";
 
 // Read your own history back from Walrus (memory).
 const history = await fetchDecisionChain(client, agentAddress);

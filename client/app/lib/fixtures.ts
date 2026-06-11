@@ -1,4 +1,4 @@
-import type { ChainEntry } from "@suitrace/sdk";
+import type { ChainEntry } from "suitrace-sdk";
 
 /**
  * Simulation-only fixtures for the two states that CANNOT exist as real

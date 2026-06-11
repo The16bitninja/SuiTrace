@@ -98,7 +98,7 @@ No registration, no permission step — the registry is a shared on-chain object
 your keypair is your identity.
 
 ```ts
-import { fetchDecisionChain, recordDecision } from "@suitrace/sdk";
+import { fetchDecisionChain, recordDecision } from "suitrace-sdk";
 
 // Session start — read your own history back from Walrus (memory).
 const history = await fetchDecisionChain(client, agentAddress);

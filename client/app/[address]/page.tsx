@@ -1,6 +1,6 @@
 import Link from "next/link";
-import type { ChainEntry } from "@suitrace/sdk";
-import { fetchDecisionChain, fetchProvenance, verifyChain, buildDecisionGraph } from "@suitrace/sdk";
+import type { ChainEntry } from "suitrace-sdk";
+import { fetchDecisionChain, fetchProvenance, verifyChain, buildDecisionGraph } from "suitrace-sdk";
 import { suiClient, REGISTRY_ID, isDeployed } from "../lib/sui";
 import { getFixtureChain, isDemoAddress } from "../lib/fixtures";
 import DecisionRow from "../components/DecisionRow";

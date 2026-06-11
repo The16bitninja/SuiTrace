@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import type { ChainEntry } from "@suitrace/sdk";
+import type { ChainEntry } from "suitrace-sdk";
 import StatusBadge, { entryStatus } from "./StatusBadge";
 
 const EXPIRY_WARNING_EPOCHS = 5;

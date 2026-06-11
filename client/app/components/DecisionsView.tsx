@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import type { DecisionGraph as GraphData } from "@suitrace/sdk";
+import type { DecisionGraph as GraphData } from "suitrace-sdk";
 import DecisionGraph from "./DecisionGraph";
 
 type View = "table" | "graph";

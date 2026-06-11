@@ -1,18 +1,64 @@
 {
-  "name": "@suitrace/sdk",
+  "name": "suitrace-sdk",
   "version": "0.1.0",
+  "description": "Verifiable episodic memory for AI agents on Sui + Walrus — write, read, and verify tamper-evident decision chains.",
+  "license": "Apache-2.0",
   "type": "module",
+  "sideEffects": false,
+  "keywords": [
+    "sui",
+    "walrus",
+    "ai-agents",
+    "agent-memory",
+    "provenance",
+    "verifiable",
+    "audit",
+    "tamper-evident"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/The16bitninja/SuiTrace.git",
+    "directory": "sdk"
+  },
+  "homepage": "https://github.com/The16bitninja/SuiTrace/sdk#readme",
+  "bugs": "https://github.com/The16bitninja/SuiTrace/issues",
+  "comment": "Top-level exports point at src for in-repo dev (Next transpilePackages). publishConfig swaps to the built dist at publish time (pnpm field replacement).",
+  "main": "./src/index.ts",
   "exports": "./src/index.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      }
+    }
+  },
   "scripts": {
+    "build": "tsup",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm build && pnpm test"
+  },
+  "peerDependencies": {
+    "@mysten/sui": "^2.0.0"
   },
   "dependencies": {
-    "@mysten/sui": "latest",
     "js-sha256": "^0.11.0"
   },
   "devDependencies": {
+    "@mysten/sui": "^2.17.0",
     "@types/node": "^22",
+    "tsup": "^8",
     "tsx": "^4.22.4",
     "typescript": "^5",
     "vitest": "^3"

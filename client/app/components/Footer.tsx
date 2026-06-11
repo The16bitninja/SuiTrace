@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const GITHUB_URL = "https://github.com/VedantTarale/SuiTrace";
+const GITHUB_URL = "https://github.com/The16bitninja/SuiTrace";
 
 export default function Footer() {
   return (
