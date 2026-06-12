@@ -70,6 +70,30 @@ body {
   );
 }
 
+/* React Flow zoom controls, restyled for the dark theme (the default buttons
+   are white with dark icons that vanish on our background). Uses the library's
+   own CSS variables plus direct overrides for robustness. */
+.suitrace-controls {
+  --xy-controls-button-background-color: #18181b;
+  --xy-controls-button-background-color-hover: #27272a;
+  --xy-controls-button-color: #e4e4e7;
+  --xy-controls-button-color-hover: #ffffff;
+  --xy-controls-button-border-color: rgba(255, 255, 255, 0.08);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.8);
+}
+.suitrace-controls .react-flow__controls-button {
+  background: #18181b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.suitrace-controls .react-flow__controls-button:hover {
+  background: #27272a;
+}
+.suitrace-controls .react-flow__controls-button svg {
+  fill: #e4e4e7;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

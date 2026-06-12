@@ -7,7 +7,6 @@ import {
   Background,
   BackgroundVariant,
   Controls,
-  MiniMap,
   Panel,
   Handle,
   Position,
@@ -86,7 +85,6 @@ const ROW_GAP = 130;
 
 export default function DecisionGraph({ graph }: { graph: GraphData }) {
   const router = useRouter();
-  const multiAgent = useMemo(() => new Set(graph.nodes.map((n) => n.agent)).size > 1, [graph.nodes]);
   const capped = graph.nodes.length < graph.totalNodes;
 
   const nodes = useMemo<Node[]>(
@@ -130,55 +128,49 @@ export default function DecisionGraph({ graph }: { graph: GraphData }) {
   );
 
   return (
-    <div className="h-[520px] w-full overflow-hidden rounded-lg border border-white/10 bg-[#08080b]">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{ padding: 0.2 }}
-        minZoom={0.2}
-        proOptions={{ hideAttribution: true }}
-        onNodeClick={(_e, node) => {
-          const d = node.data as RFData;
-          router.push(`/${d.agent}/${d.seqNum}`);
-        }}
-      >
-        <Background variant={BackgroundVariant.Dots} color="#27272a" gap={26} size={1} />
-        <Controls className="!border-white/10 !bg-white/5" showInteractive={false} />
-        {multiAgent && (
-          <MiniMap
-            pannable
-            zoomable
-            maskColor="rgba(0,0,0,0.6)"
-            style={{ background: "#0f0f14", border: "1px solid rgba(255,255,255,0.1)" }}
-            nodeColor={(n) => STATUS[(n.data as RFData).status].color}
-          />
-        )}
+    <div className="w-full overflow-hidden rounded-lg border border-white/10 bg-[#08080b]">
+      {/* Legend lives above the canvas (not floating over it) so it never
+          overlaps the top row of nodes. Status keys on the left, edge keys right. */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 border-b border-white/10 bg-[#0f0f14]/60 px-4 py-2.5 text-[10px] text-zinc-400">
+        {(Object.keys(STATUS) as NodeStatus[]).map((k) => (
+          <span key={k} className="flex items-center gap-1.5">
+            <span className="inline-block h-2 w-2 rounded-full" style={{ background: STATUS[k].color }} />
+            {STATUS[k].label}
+          </span>
+        ))}
+        <span className="ml-auto flex items-center gap-1.5">
+          <span className="inline-block h-px w-4" style={{ background: "#3f3f46" }} /> prev
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-px w-4" style={{ background: "#38bdf8" }} /> derived_from
+        </span>
+      </div>
 
-        {/* Legend */}
-        <Panel position="top-left" className="!m-3 rounded-lg border border-white/10 bg-[#0f0f14]/90 px-3 py-2 text-[10px] text-zinc-400 backdrop-blur">
-          <div className="mb-1 flex items-center gap-3">
-            {(Object.keys(STATUS) as NodeStatus[]).map((k) => (
-              <span key={k} className="flex items-center gap-1">
-                <span className="inline-block h-2 w-2 rounded-full" style={{ background: STATUS[k].color }} />
-                {STATUS[k].label}
-              </span>
-            ))}
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1"><span className="inline-block h-px w-4" style={{ background: "#3f3f46" }} /> prev</span>
-            <span className="flex items-center gap-1"><span className="inline-block h-px w-4" style={{ background: "#38bdf8" }} /> derived_from</span>
-          </div>
-        </Panel>
+      <div className="relative h-[520px] w-full">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+          minZoom={0.2}
+          proOptions={{ hideAttribution: true }}
+          onNodeClick={(_e, node) => {
+            const d = node.data as RFData;
+            router.push(`/${d.agent}/${d.seqNum}`);
+          }}
+        >
+          <Background variant={BackgroundVariant.Dots} color="#27272a" gap={26} size={1} />
+          <Controls className="suitrace-controls" showInteractive={false} />
 
-        {/* Cap notice */}
-        {capped && (
-          <Panel position="top-right" className="!m-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[10px] font-medium text-amber-300">
-            Showing {graph.nodes.length} of {graph.totalNodes} decisions (capped for performance)
-          </Panel>
-        )}
-      </ReactFlow>
+          {/* Cap notice */}
+          {capped && (
+            <Panel position="top-right" className="!m-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[10px] font-medium text-amber-300">
+              Showing {graph.nodes.length} of {graph.totalNodes} decisions (capped for performance)
+            </Panel>
+          )}
+        </ReactFlow>
+      </div>
     </div>
   );
 }
